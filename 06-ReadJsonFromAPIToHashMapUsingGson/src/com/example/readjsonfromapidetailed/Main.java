@@ -21,7 +21,11 @@ public class Main {
 		selectWeatherLocation();
 		}while(exit != true);
 	}
-
+	//This is a test change
+	private static void test()
+	{
+		System.out.println("Hello, this is a test");
+	}
 	private static void selectWeatherLocation() throws NumberFormatException, IOException {
 		int iOpt;
 		sApiURL = "http://www.codingfury.net/training/weathersample/weather.php";
