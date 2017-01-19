@@ -63,6 +63,11 @@ public class Main {
 		
 	}
 
+	private static void test() 
+		{ 
+ 		System.out.println("Hello, this is a test"); 
+	 	} 
+
 	private static void printOutWeatherLocations(
 			Map<String, Object> mLocationsDict) {
 		Map<String, Object> locationMap = (Map<String, Object>) mLocationsDict.get("location");
