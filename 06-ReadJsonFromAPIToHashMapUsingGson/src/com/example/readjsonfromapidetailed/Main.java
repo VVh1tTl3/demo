@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,73 +17,77 @@ public class Main {
 	static String sApiMethod = "GET";
 	static String sApiURL = "http://www.codingfury.net/training/weathersample/weather.php";
 	static boolean exit = false;
-	public static void main(String[] args) throws NumberFormatException, IOException {
-		do{
-		selectWeatherLocation();
-		}while(exit != true);
+
+	public static void main(String[] args) throws NumberFormatException,
+			IOException {
+		do {
+			selectWeatherLocation();
+		} while (exit != true);
 	}
 
-	private static void selectWeatherLocation() throws NumberFormatException, IOException {
-		int iOpt;
+	private static void selectWeatherLocation() throws NumberFormatException,
+			IOException {
+
+		int iOpt, loopCount = 1;
+
 		sApiURL = "http://www.codingfury.net/training/weathersample/weather.php";
-		String bel = "Belfast", dub = "Dublin", lon = "London";
-		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-		System.out.println("Please select the city you wish to display:");
-		System.out.println("-------------------------------------------");
-		System.out.println("1.) " + bel);
-		System.out.println("2.) " + dub);
-		System.out.println("3.) " + lon);
-		System.out.println("4.) Exit System");
-		System.out.print("Option Selected:");
-		iOpt = Integer.parseInt(reader.readLine());
-		switch(iOpt){
-		case 1:sApiURL += "?location="+bel;
-		System.out.println("Belfast Selected");
-		break;
-		case 2:sApiURL +=  "?location="+dub;
-		System.out.println("Dublin Selected");
-		break;
-		case 3:sApiURL +=  "?location="+lon;
-		System.out.println("London Selected");
-		break;
-		case 4:
-			System.out.println("System exited");
-			exit = true;
-			break;
-		default:System.out.println("Incorrect Option selected");
-		break;
-		
-		}
-		if(iOpt == 1 || iOpt == 2 || iOpt ==3){
 		String sJsonString = netGetJSON(sApiMethod, sApiURL);
-		Map<String, Object> mLocationsDict = new Gson().fromJson(sJsonString,
+		Map<String, Object> oLocationsDict = new Gson().fromJson(sJsonString,
 				new TypeToken<HashMap<String, Object>>() {
 				}.getType());
-		printOutWeatherLocations(mLocationsDict);
+		System.out.println("Please select the city you wish to display:");
+		System.out.println("-------------------------------------------");
+		ArrayList<String> locationsArray = (ArrayList<String>) oLocationsDict
+				.get("locations");
+		for (String key : locationsArray) {
+			System.out.println(loopCount + ".) " + key);
+			loopCount++;
 		}
-		
-	}
+		System.out.println(loopCount + ".) Exit System");
 
-	private static void test() 
-		{ 
- 		System.out.println("Hello, this is a test"); 
-	 	} 
+		BufferedReader reader = new BufferedReader(new InputStreamReader(
+				System.in));
+		System.out.print("Option Selected:");
+		iOpt = Integer.parseInt(reader.readLine());
+		if (iOpt == loopCount) {
+			System.out.println("System Exited");
+			exit = true;
+		} else if (iOpt < loopCount) {
+			for (String str : locationsArray) {
+				if (str.equals(locationsArray.get(iOpt - 1))) {
+					sApiURL += "?location=" + str;
+					sJsonString = netGetJSON(sApiMethod, sApiURL);
+					Map<String, Object> mLocationsDict = new Gson().fromJson(
+							sJsonString,
+							new TypeToken<HashMap<String, Object>>() {
+							}.getType());
+					printOutWeatherLocations(mLocationsDict);
+				}
+			}
+		} else {
+			System.out.println("Wrong option selected");
+			return;
+		}
+
+	}
 
 	private static void printOutWeatherLocations(
 			Map<String, Object> mLocationsDict) {
-		Map<String, Object> locationMap = (Map<String, Object>) mLocationsDict.get("location");
+		Map<String, Object> locationMap = (Map<String, Object>) mLocationsDict
+				.get("location");
 		System.out.println("Location Details");
 		System.out.println("---------------------");
-		for(String key: locationMap.keySet()){
-			System.out.println(key + ": " +locationMap.get(key));
+		for (String key : locationMap.keySet()) {
+			System.out.println(key.toUpperCase() + ": " + locationMap.get(key));
 		}
 		System.out.println("---------------------");
 		System.out.println("Weather Details");
 		System.out.println("---------------------");
-		
-		Map<String, Object> weatherMap = (Map<String, Object>) mLocationsDict.get("weather");
-		for(String key: weatherMap.keySet()){
-			System.out.println(key + ": " +weatherMap.get(key));
+
+		Map<String, Object> weatherMap = (Map<String, Object>) mLocationsDict
+				.get("weather");
+		for (String key : weatherMap.keySet()) {
+			System.out.println(key.toUpperCase() + ": " + weatherMap.get(key));
 		}
 		System.out.println("---------------------");
 
